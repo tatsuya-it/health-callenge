@@ -2,7 +2,12 @@
     <div>
       <h3>受診の記録</h3>
       <input type="hidden" id="missionComment" v-model="missionComment">
-      <h4> {{ missionComment }} </h4>
+      <div v-if="missionComment != ''">
+        <h4> {{ missionComment }} </h4>
+      </div>
+      <div v-else>
+        <h4> 3つの受診でポイント獲得できます </h4>
+      </div>
         <table align="center">
             <thead>
             <tr>
@@ -168,12 +173,14 @@ export default {
         console.log(response.data.documents)
         let matchObj = []
         for (var item of response.data.documents) {
+          console.log('--- time ---')
+          console.log(item)
           if (item.fields.localId.stringValue === localStorage.getItem('localId')) {
-            let updateTime = item.updateTime
+            let createTime = item.createTime
             if (matchObj.length == 0) {
               matchObj.push(item)
             } else {
-              if (updateTime < item.updateTime) {
+              if (matchObj[0].createTime < item.createTime) {
                 matchObj = []
                 matchObj.push(item)
               }
@@ -202,7 +209,7 @@ export default {
     Datepicker
   },
   methods: {
-    async record() {
+    record() {
       let completeCount = 0
       let completeComment = ''
       if (this.examinationName_1 != '' && this.medicalInstitutionName_1 != '' && this.consultationDate_1 != '') {
@@ -215,7 +222,7 @@ export default {
         completeCount++
       }
       if (completeCount == 0) {
-        completeComment = "3つの受診でポイント獲得です"
+        completeComment = "3つの受診でポイント獲得できます"
       } else if (completeCount == 1)  {
         completeComment = "あと2つの受診でポイント獲得です"
       } else if (completeCount == 2)  {
@@ -226,7 +233,7 @@ export default {
         completeComment = "ポイントを獲得しました."
       }
       console.log(completeComment)
-      await axios.post(
+      axios.post(
         '/user',
         {
           fields: {
@@ -262,6 +269,9 @@ export default {
             },
             missionComment: {
               stringValue: completeComment
+            },
+            createTime: {
+              stringValue: new Date()
             }
           },
           createTime: new Date()
@@ -272,6 +282,7 @@ export default {
           }
         }
       );
+      location.reload()
     },
   }
 };
