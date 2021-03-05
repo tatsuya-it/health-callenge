@@ -7,7 +7,7 @@ import store from './store';
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL =
-  'https://firestore.googleapis.com/v1/projects/vuejs-http-1956e/databases/(default)/documents';
+  'https://firestore.googleapis.com/v1/projects/vue-health-b3e12/databases/(default)/documents';
 
 const interceptorsRequest = axios.interceptors.request.use(
   config => {

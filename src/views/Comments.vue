@@ -76,6 +76,7 @@ export default {
       );
       this.name = '';
       this.comment = '';
+      location.reload();
     }
   }
 };

@@ -39,7 +39,7 @@ export default new Vuex.Store({
     login({ dispatch }, authData) {
       axios
         .post(
-          '/accounts:signInWithPassword?key=AIzaSyBw0kqvtMarWQPivwS9xNIwjP68son8EWE',
+          '/accounts:signInWithPassword?key=AIzaSyBjKR0lSpwcEqvXUKoZUuyQZtABHAVgi1s',
           {
             email: authData.email,
             password: authData.password,
@@ -64,7 +64,7 @@ export default new Vuex.Store({
     },
     async refreshIdToken({ dispatch }, refreshToken) {
       await axiosRefresh
-        .post('/token?key=AIzaSyBw0kqvtMarWQPivwS9xNIwjP68son8EWE', {
+        .post('/token?key=AIzaSyBjKR0lSpwcEqvXUKoZUuyQZtABHAVgi1s', {
           grant_type: 'refresh_token',
           refresh_token: refreshToken
         })
@@ -78,7 +78,7 @@ export default new Vuex.Store({
     },
     register({ dispatch }, authData) {
       axios
-        .post('/accounts:signUp?key=AIzaSyBw0kqvtMarWQPivwS9xNIwjP68son8EWE', {
+        .post('/accounts:signUp?key=AIzaSyBjKR0lSpwcEqvXUKoZUuyQZtABHAVgi1s', {
           email: authData.email,
           password: authData.password,
           returnSecureToken: true
