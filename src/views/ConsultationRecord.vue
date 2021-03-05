@@ -128,7 +128,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex"
+import axios from 'axios';
 import Datepicker from "vuejs-datepicker"
 import { ja } from 'vuejs-datepicker/dist/locale'
 
@@ -137,7 +137,7 @@ export default {
     return {
         ja:ja,
         DatePickerFormat: 'yyyy年M月d日',
-        examinationName_1: this.$store.getters.examinationName_1,
+        examinationName_1: '',
         examinationName_2: '',
         examinationName_3: '',
         medicalInstitutionName_1: '',
@@ -148,37 +148,98 @@ export default {
         consultationDate_3: '',
     };
   },
+  computed: {
+    idToken() {
+      return this.$store.getters.idToken;
+    }
+  },
   created() {
     console.log('---- created -----')
-    console.log(this.$store.getters.idToken)
-    console.log(this.$store.getters.examinationName_1)
-    this.examinationName_1 = this.$store.getters.examinationName_1
-    this.examinationName_2 = this.$store.getters.examinationName_2
-    this.examinationName_3 = this.$store.getters.examinationName_3
-    this.medicalInstitutionName_1 = this.$store.getters.medicalInstitutionName_1
-    this.medicalInstitutionName_2 = this.$store.getters.medicalInstitutionName_2
-    this.medicalInstitutionName_3 = this.$store.getters.medicalInstitutionName_3
-    this.consultationDate_1 = this.$store.getters.consultationDate_1
-    this.consultationDate_2 = this.$store.getters.consultationDate_2
-    this.consultationDate_3 = this.$store.getters.consultationDate_3
+    axios
+      .get('/user/', {
+        headers: {
+          Authorization: `Bearer ${this.idToken}`
+        }
+      })
+      .then(response => {
+        let matchObj = []
+        for (var item of response.data.documents) {
+          if (item.fields.localId.stringValue === localStorage.getItem('localId')) {
+            let updateTime = item.updateTime
+            if (matchObj.length == 0) {
+              matchObj.push(item)
+            } else {
+              if (updateTime < item.updateTime) {
+                matchObj = []
+                matchObj.push(item)
+              }
+            }
+          } 
+        }
+        console.log(matchObj)
+        if (matchObj.length > 0) {
+          console.log(matchObj[0].fields.examinationName_1.stringValue)
+          let newRecord = matchObj[0].fields
+          this.examinationName_1 = newRecord.examinationName_1.stringValue
+          this.examinationName_2 = newRecord.examinationName_2.stringValue
+          this.examinationName_3 = newRecord.examinationName_3.stringValue
+          this.medicalInstitutionName_1 = newRecord.medicalInstitutionName_1.stringValue
+          this.medicalInstitutionName_2 = newRecord.medicalInstitutionName_2.stringValue
+          this.medicalInstitutionName_3 = newRecord.medicalInstitutionName_3.stringValue
+          this.consultationDate_1 = newRecord.consultationDate_1.stringValue
+          this.consultationDate_2 = newRecord.consultationDate_2.stringValue
+          this.consultationDate_3 = newRecord.consultationDate_3.stringValue
+        }
+      });
   },
   components: {
     Datepicker
   },
   methods: {
     record() {
-      console.log('---- dispatch record ----')
-      this.$store.dispatch('record', {
-        examinationName_1: this.examinationName_1,
-        examinationName_2: this.examinationName_2,
-        examinationName_3: this.examinationName_3,
-        medicalInstitutionName_1: this.medicalInstitutionName_1,
-        medicalInstitutionName_2: this.medicalInstitutionName_2,
-        medicalInstitutionName_3: this.medicalInstitutionName_3,
-        consultationDate_1: this.consultationDate_1,
-        consultationDate_2: this.consultationDate_2,
-        consultationDate_3: this.consultationDate_3,
-      })
+      axios.post(
+        '/user',
+        {
+          fields: {
+            localId: {
+              stringValue: localStorage.getItem('localId')
+            },
+            examinationName_1: {
+              stringValue: this.examinationName_1
+            },
+            examinationName_2: {
+              stringValue: this.examinationName_2
+            },
+            examinationName_3: {
+              stringValue: this.examinationName_3
+            },
+            medicalInstitutionName_1: {
+              stringValue: this.medicalInstitutionName_1
+            },
+            medicalInstitutionName_2: {
+              stringValue: this.medicalInstitutionName_2
+            },
+            medicalInstitutionName_3: {
+              stringValue: this.medicalInstitutionName_3
+            },
+            consultationDate_1: {
+              stringValue: this.consultationDate_1
+            },
+            consultationDate_2: {
+              stringValue: this.consultationDate_2
+            },
+            consultationDate_3: {
+              stringValue: this.consultationDate_3
+            }
+          },
+          createTime: new Date()
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${this.idToken}`
+          }
+        }
+      );
     }
   }
 };

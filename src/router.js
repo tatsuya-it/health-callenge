@@ -16,7 +16,7 @@ export default new Router({
       component: Comments,
       beforeEnter(to, from, next) {
         if (store.getters.idToken) {
-          next();
+          next('/consultation');
         } else {
           next('/login');
         }
@@ -27,7 +27,7 @@ export default new Router({
       component: Login,
       beforeEnter(to, from, next) {
         if (store.getters.idToken) {
-          next('/');
+          next('/consultation');
         } else {
           next();
         }
@@ -38,7 +38,7 @@ export default new Router({
       component: Register,
       beforeEnter(to, from, next) {
         if (store.getters.idToken) {
-          next('/');
+          next('/consultation');
         } else {
           next();
         }
