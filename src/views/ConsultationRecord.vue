@@ -1,6 +1,8 @@
 <template>
     <div>
       <h3>受診の記録</h3>
+      <input type="hidden" id="missionComment" v-model="missionComment">
+      <h4> {{ missionComment }} </h4>
         <table align="center">
             <thead>
             <tr>
@@ -123,7 +125,7 @@
             </tr>
             </tbody>
         </table>
-        <button @click="record">記録する</button>
+        <button @click="record">記録</button>
     </div>
 </template>
 
@@ -146,15 +148,16 @@ export default {
         consultationDate_1: '',
         consultationDate_2: '',
         consultationDate_3: '',
+        missionComment: '',
     };
   },
   computed: {
     idToken() {
       return this.$store.getters.idToken;
-    }
+    },
   },
   created() {
-    console.log('---- created -----')
+    console.log(' --- created ---')
     axios
       .get('/user/', {
         headers: {
@@ -162,6 +165,7 @@ export default {
         }
       })
       .then(response => {
+        console.log(response.data.documents)
         let matchObj = []
         for (var item of response.data.documents) {
           if (item.fields.localId.stringValue === localStorage.getItem('localId')) {
@@ -178,7 +182,7 @@ export default {
         }
         console.log(matchObj)
         if (matchObj.length > 0) {
-          console.log(matchObj[0].fields.examinationName_1.stringValue)
+          console.log(matchObj[0])
           let newRecord = matchObj[0].fields
           this.examinationName_1 = newRecord.examinationName_1.stringValue
           this.examinationName_2 = newRecord.examinationName_2.stringValue
@@ -189,15 +193,40 @@ export default {
           this.consultationDate_1 = newRecord.consultationDate_1.stringValue
           this.consultationDate_2 = newRecord.consultationDate_2.stringValue
           this.consultationDate_3 = newRecord.consultationDate_3.stringValue
+          console.log(newRecord.missionComment)
+          this.missionComment = newRecord.missionComment.stringValue
         }
-      });
+      })
   },
   components: {
     Datepicker
   },
   methods: {
-    record() {
-      axios.post(
+    async record() {
+      let completeCount = 0
+      let completeComment = ''
+      if (this.examinationName_1 != '' && this.medicalInstitutionName_1 != '' && this.consultationDate_1 != '') {
+        completeCount++
+      }
+      if (this.examinationName_2 != '' && this.medicalInstitutionName_2 != '' && this.consultationDate_2 != '') {
+        completeCount++
+      }
+      if (this.examinationName_3 != '' && this.medicalInstitutionName_3 != '' && this.consultationDate_3 != '') {
+        completeCount++
+      }
+      if (completeCount == 0) {
+        completeComment = "3つの受診でポイント獲得です"
+      } else if (completeCount == 1)  {
+        completeComment = "あと2つの受診でポイント獲得です"
+      } else if (completeCount == 2)  {
+        completeComment = "あと1つの受診でポイント獲得です"
+      } else if (completeCount == 3)  {
+        completeComment = "ポイントを獲得しました"
+      } else {
+        completeComment = "ポイントを獲得しました."
+      }
+      console.log(completeComment)
+      await axios.post(
         '/user',
         {
           fields: {
@@ -230,6 +259,9 @@ export default {
             },
             consultationDate_3: {
               stringValue: this.consultationDate_3
+            },
+            missionComment: {
+              stringValue: completeComment
             }
           },
           createTime: new Date()
@@ -240,7 +272,7 @@ export default {
           }
         }
       );
-    }
+    },
   }
 };
 </script>
