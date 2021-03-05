@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Comments from './views/Comments.vue';
 import Login from './views/Login.vue';
 import Register from './views/Register.vue';
+import ConsultationRecord from './views/ConsultationRecord.vue';
 import store from './store';
 
 Vue.use(Router);
@@ -40,6 +41,17 @@ export default new Router({
           next('/');
         } else {
           next();
+        }
+      }
+    },
+    {
+      path: '/consultation',
+      component: ConsultationRecord,
+      beforeEnter(to, from, next) {
+        if (store.getters.idToken) {
+          next();
+        } else {
+          next('/login');
         }
       }
     }

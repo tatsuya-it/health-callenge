@@ -6,6 +6,10 @@
           to="/"
           class="header-item"
         >掲示板</router-link>
+        <router-link
+          to="/consultation"
+          class="header-item"
+        >受診記録</router-link>
         <span
           class="header-item"
           @click="logout"
