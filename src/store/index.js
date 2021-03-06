@@ -87,15 +87,13 @@ export default new Vuex.Store({
           returnSecureToken: true
         })
         .then(response => {
-          console.log('---- reg res -----')
-          console.log(response)
           dispatch('setAuthData', {
             idToken: response.data.idToken,
             expiresIn: response.data.expiresIn,
             refreshToken: response.data.refreshToken,
             localId: response.data.localId
           });
-          router.push('/');
+          router.push('/consultation');
         });
     },
     setAuthData({ commit, dispatch }, authData) {

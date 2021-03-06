@@ -176,7 +176,6 @@ export default {
           console.log('--- time ---')
           console.log(item)
           if (item.fields.localId.stringValue === localStorage.getItem('localId')) {
-            let createTime = item.createTime
             if (matchObj.length == 0) {
               matchObj.push(item)
             } else {
@@ -204,12 +203,13 @@ export default {
           this.missionComment = newRecord.missionComment.stringValue
         }
       })
+      .catch(()=>null)
   },
   components: {
     Datepicker
   },
   methods: {
-    record() {
+    async record() {
       let completeCount = 0
       let completeComment = ''
       if (this.examinationName_1 != '' && this.medicalInstitutionName_1 != '' && this.consultationDate_1 != '') {
@@ -233,7 +233,7 @@ export default {
         completeComment = "ポイントを獲得しました."
       }
       console.log(completeComment)
-      axios.post(
+      await axios.post(
         '/user',
         {
           fields: {

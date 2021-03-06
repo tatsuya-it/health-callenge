@@ -33,6 +33,12 @@ export default {
       return this.$store.getters.idToken !== null;
     }
   },
+  props: {
+    isShow: {
+      type: Boolean,
+      default: false
+    }
+  },
   methods: {
     logout() {
       this.$store.dispatch('logout');
